@@ -1,21 +1,36 @@
 import discord
-from discord.ext import commands
+import random
 
+with open("token.txt", "r") as f:
+    token = f.read()
+# Variabel intents menyimpan hak istimewa bot
 intents = discord.Intents.default()
+# Mengaktifkan hak istimewa message-reading
 intents.message_content = True
+# Membuat bot di variabel klien dan mentransfernya hak istimewa
+client = discord.Client(intents=intents)
 
-bot = commands.Bot(command_prefix='$', intents=intents)
-
-@bot.event
+@client.event
 async def on_ready():
-    print(f'We have logged in as {bot.user}')
+    print(f'Kita telah masuk sebagai {client.user}')
 
-@bot.command()
-async def hello(ctx):
-    await ctx.send(f'Hi! I am a bot {bot.user}!')
+@client.event
+async def on_message(message):
+    if message.author == client.user:
+        return
+    if message.content.startswith('$halo'):
+        await message.channel.send("Hi!")
+    elif message.content.startswith('$bye'):
+        await message.channel.send("\\U0001f642")
+    else:
+        await message.channel.send(message.content)
 
-@bot.command()
-async def heh(ctx, count_heh = 5):
-    await ctx.send("he" * count_heh)
 
-bot.run("TOKEN RAHASIA ADA DI SINI")
+def flip_coin():
+    flip = random.randint(0, 2)
+    if flip == 0:
+        return "HEADS"
+    else:
+        return "TAILS"
+
+client.run(token)
